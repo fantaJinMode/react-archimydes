@@ -53,11 +53,11 @@ const saveUserStoriesError = error => ({
   errorMsg: error.response && error.response.data && error.response.data.errorMessage
 });
 
-export const saveUserStories = (data, projectId, sprintId) => {
+export const createUserStories = (data) => {
   return async (dispatch) => {
     dispatch(saveUserStoriesStart());
     try {
-      const response = await saveUserStoriesAPI(data, projectId, sprintId);
+      const response = await saveUserStoriesAPI(data);
       dispatch(saveUserStoriesSuccess(response));
       return response;
     } catch (error) {

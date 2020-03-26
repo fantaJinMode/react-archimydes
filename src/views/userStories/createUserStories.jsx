@@ -9,28 +9,21 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Input from '@material-ui/core/Input';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from "@material-ui/core/InputLabel";
-import Table from "components/Table/Table.jsx";
 import Button from "components/CustomButtons/Button.jsx";
 import PageTitle from "components/inc/PageTitle.jsx";
 import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import Close from '@material-ui/icons/Close';
-import Help from '@material-ui/icons/Help';
 
 import LoadingComponent from "components/inc/LoadingComponent";
 import style from "assets/jss/material-kit-pro-react/views/componentsSections/contentAreas.jsx";
 import basicsStyle from "assets/jss/material-kit-pro-react/views/componentsSections/basicsStyle.jsx";
 import { connect } from "react-redux";
-import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import { saveUserStories, addSuccessCriteria, removeSuccessCriteria, clearSuccessCriteria, clearUserStoriesData, getUserStories, setUserStoriesData, moveUserStoryToAnotherSprint, deleteUserStory,getOneUserStories,updateUserStories } from "../../actions/userStories";
+import { createUserStories, clearUserStoriesData, setUserStoriesData, deleteUserStory,getOneUserStories,updateUserStories } from "../../actions/userStories";
 import _ from 'lodash-es';
-import queryString from 'query-string';
 import { Editor } from 'react-draft-wysiwyg';
 import { EditorState, convertToRaw } from 'draft-js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import draftToHtml from 'draftjs-to-html';
-import {stateFromHTML} from 'draft-js-import-html';
 
 
 import classNames from "classnames";
@@ -45,28 +38,25 @@ import Clearfix from "components/Clearfix/Clearfix.jsx";
 
 import styles from "assets/jss/customStyle.jsx";
 import "react-bootstrap-wizard/dist/react-wizard.scss";
+import {complexity, type} from  "../../utils/dataStore";
+
 
 class UserStories extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			thirdtStep: "Third step here",
 			criteriaData: [],
-			userStoriesTitleOne: '',
-			userStoriesTitleTwo: '',
-			userStoriesTitleThree: '',
-			userStoriesDescription: '',
-			userStoriesTitleOneError: false,
-			userStoriesTitleTwoError: false,
-			userStoriesTitleThreeError: false,
-			userStoriesDescriptionError: false,
-			complexity: 'Low',
-			storyAcceptanceText: '',
-			addStory: "",
-			storyId: "",
-			editStory: "",
-			projectId: "",
-			sprintId: "",
+			formData: {
+				summary: '',
+				description: '',
+				type: 1,
+				complexity: 'Low',
+				estimatedHrs: null,
+				cost: null 
+			},
+			userStoriesSummaryError: false,
+			userStoriesCostError: false,
+			userStoriesEstimatedHrsError: false,
 			isLoading: false,
 			editorState: EditorState.createEmpty(),
 		};
@@ -74,68 +64,11 @@ class UserStories extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		// if(!_.isEqual(prevProps.successCriteriaData , this.props.successCriteriaData)) {
-		// 	const criteriaData = this.props.successCriteriaData.map(
-		// 		(val, i) => {
-		// 			let newArr = [];
-		// 			newArr.push(i+1);
-		// 			newArr.push(val);
-		// 			newArr.push(<div className="success-criteria-delete"><IconButton color="secondary" onClick={() => this.handleDeleteStoryAcceptance(i)} ><Close /></IconButton></div>);
-		// 			return newArr;
-		// 		});
-		// 	this.setState({criteriaData})
-		// }
+	
 	}
 
-	componentWillMount () {
-		// const {history} =this.props
-		// this.setState({
-		// 	addStory: history && history.location && history.location.state,
-		// 	editStory: history && history.location && history.location.state,
-		// 	storyId: history && history.location && history.location.storyId,
-		// 	projectId: history && history.location && history.location.projectId,
-		// 	sprintId: history && history.location && history.location.sprintId,
-		// 	index: history && history.location && history.location.index,
-		// })
-
-	}
 	componentDidMount() {
 		// this.getOneUserStory()
-	}
-
-	getOneUserStory = async () =>{
-		const {projectId, sprintId, storyId,editStory} = this.state
-		if(editStory === "editStory"){
-			const response = await this.props.getOneUserStories(projectId, sprintId, storyId)
-			if(response && response.data){
-				this.setState({
-					userStoriesTitleOne: response.data.titleObject.role,
-					userStoriesTitleTwo: response.data.titleObject.want,
-					userStoriesTitleThree: response.data.titleObject.purpose,
-					userStoriesDescription: response.data.description,
-					complexity: response.data.complexity,
-				})
-				const updateStorySuccessCriteria = _.map(response && response.data && response.data.criteria || [], (val, i) => {
-					this.props.addSuccessCriteria(val.text);
-				});
-			}
-			const contentState = stateFromHTML(response.data.description);
-			const editorState = EditorState.createWithContent(contentState);
-			this.setState({editorState: editorState});
-		}
-
-	}
-
-	backe = () =>{
-		const { addStory, editStory} = this.state
-		if(addStory === "addStory"){
-			this.props.jumpToStep(3)
-		}else if(editStory === "editStory"){
-			this.props.jumpToStep(3)
-			this.props.clearSuccessCriteria();
-		}else {
-			this.props.jumpToStep(1)
-		}
 	}
 
 	onEditorStateChange = (editorState) => {
@@ -154,56 +87,20 @@ class UserStories extends React.Component {
 	}
 
 	render() {
-        const { editorState } = this.state;
-        const { classes } = this.props;
-		const complexity = [
-			{
-				value: 'Low',
-				label: 'Low',
-			},
-			{
-				value: 'Medium',
-				label: 'Medium',
-			},
-			{
-				value: 'High',
-				label: 'High',
-			},
-        ];
-        const type = [
-			{
-				value: '1',
-				label: 'enhancement',
-			},
-			{
-				value: '2',
-				label: 'BugFix',
-			},
-			{
-				value: '3',
-				label: 'QA',
-			},
-		];
-
+        const { editorState, formData, editStory, userStoriesSummaryError, userStoriesCostError, userStoriesEstimatedHrsError, isLoading  } = this.state;
+		const { classes } = this.props;
 	
-		const {editStory, index} = this.state;
 		return (
-
-            <div>
+        <div>
         <div style={styles.removePadding}>
           <NavigationBar />
         </div>
         <div className={classNames(classes.main)}>
-          <div style={styles.mainContentSection}>
-          <div>
+          <div style={styles.projectListSection}>
+          <div style={classes.container}>
 				<PageTitle title={editStory === "editStory" ? "Update User Stories" : 'Create User Stories'} />
-				<LoadingComponent isLoading={ this.state.isLoading }>
+				<LoadingComponent isLoading={ isLoading }>
 					<Grid container>
-						<Grid item xs={12}>
-							<div className="title form-label">
-								<h3 className="form-label-text">{editStory === "editStory"  ? `Update User Story No. ${index}` : `Add User Story No. ${ this.props.userStoriesSavedData.length + 1 }`}</h3>
-							</div>
-						</Grid>
 						<Grid item xs={12}>
 							<div className="form-element">
 								<div className="title form-label">
@@ -211,19 +108,17 @@ class UserStories extends React.Component {
 								</div>
 								<TextField
 									id="regular"
+									name="summary"
 									inputProps={{
 										maxLength: 150,
-										placeholder: "Customer"
 									}}
 									className="form-textfield"
 									fullWidth={true}
-									error={ this.state.userStoriesTitleOneError ? true : false }
-									value={ this.state.userStoriesTitleOne }
-									onChange={(e) => {
-										this.handleUserStoriesTitleOne(e);
-									}}
+									error={ userStoriesSummaryError ? true : false }
+									value={ formData.summary }
+									onChange={this.handleUserInput}
 									onBlur={(e) => {
-										this.handleUserStoriesTitleOneValidation(e);
+										this.handleUserStoriesSummaryValidation(e);
 									}}
 								/>
 							</div>
@@ -248,11 +143,9 @@ class UserStories extends React.Component {
 								<FormControl className={basicsStyle.formControl}>
 									<InputLabel htmlFor="complexity-helper">Complexity</InputLabel>
 									<Select
-										value={this.state.complexity}
-										onChange={(e) => {
-											this.handleUserStoriesComplexity(e);
-										}}
-										input={<Input name="age" id="complexity-helper" />}
+										value={formData.complexity}
+										onChange={this.handleUserInput}
+										name="complexity"
 									>
 										{complexity.map(option => (
 											<MenuItem key={option.value} value={option.value}>
@@ -263,22 +156,89 @@ class UserStories extends React.Component {
 									<FormHelperText>Please select complexity</FormHelperText>
 								</FormControl>
 							</div>
-							<div className="form-element complexity-element">
-								<Help className="complexity-help"/>
+						</Grid>
+						<Grid item xs={12}>
+							<div className="form-element form-select-element complexity-element">
+								<FormControl className={basicsStyle.formControl}>
+									<InputLabel htmlFor="type">Type</InputLabel>
+									<Select
+										value={formData.type}
+										onChange={this.handleUserInput}
+										name="type"
+									>
+										{type.map(option => (
+											<MenuItem key={option.value} value={option.value}>
+												{option.label}
+											</MenuItem>
+										))}
+									</Select>
+									<FormHelperText>Please select Type</FormHelperText>
+								</FormControl>
+							</div>
+						</Grid>
+
+						<Grid item xs={12}>
+							<div className="form-element">
+								<div className="title form-label">
+									<h3 className="form-label-text">Cost</h3>
+								</div>
+								<TextField
+									id="regular"
+									name="cost"
+									inputProps={{
+										maxLength: 150,
+									}}
+									type="number"
+									className="form-textfield"
+									fullWidth={true}
+									error={ userStoriesCostError ? true : false }
+									value={ formData.cost }
+									onChange={this.handleUserInput}
+									onBlur={(e) => {
+										this.handleUserStoriesCostValidation(e);
+									}}
+								/>
+							</div>
+						</Grid>
+						
+						<Grid item xs={12}>
+							<div className="form-element">
+								<div className="title form-label">
+									<h3 className="form-label-text">Estimated Hours</h3>
+								</div>
+								<TextField
+									id="regular"
+									name="estimatedHrs"
+									inputProps={{
+										maxLength: 10,
+									}}
+									type="number"
+									className="form-textfield"
+									fullWidth={true}
+									error={ userStoriesEstimatedHrsError ? true : false }
+									value={ formData.estimatedHrs }
+									onChange={this.handleUserInput}
+									onBlur={(e) => {
+										this.handleUserStoriesEstimatedHourValidation(e);
+									}}
+								/>
 							</div>
 						</Grid>
 					</Grid>
 				</LoadingComponent>
-				<div>
+				<div
+					className={classes.center}
+				>
 					<Button
 						type="button"
 						color="success"
 						round
-						size="sm"
-						className="custom-stepwizard-cancel-btn"
-						onClick={this.backe}
+						size="md"
+						style={{marginTop:33}}
+						disabled={_.some(formData, _.isEmpty)}
+						onClick={this.handleUserStoryValidation}
 					>
-						Back
+						Submit
 					</Button>
 				</div>
 			</div>
@@ -303,153 +263,103 @@ class UserStories extends React.Component {
 			
 		);
 	}
+	
+	handleUserInput = (e) => {
+		const name = e.target.name;
+		const value = e.target.value;
+		this.setState({
+            formData:  {
+                ...this.state.formData,
+                [name]: value
+            }
+        });
+	}
 
-	handleUserStoriesTitleOne = (event) => {
-		this.setState({ userStoriesTitleOne: event.target.value });
+	handleUserStoriesSummary = (event) => {
+		this.setState({
+            formData:  {
+                ...this.state.formData,
+                summary: event.target.value
+            }
+        });
 	};
 
-	handleUserStoriesTitleTwo = (event) => {
-		this.setState({ userStoriesTitleTwo: event.target.value });
+	handleUserStoriesCost = (event) => {
+		console.log('test', event);
+		this.setState({
+            formData:  {
+                ...this.state.formData,
+                cost: event.target.value
+            }
+        });
 	};
-
-	handleUserStoriesTitleThree = (event) => {
-		this.setState({ userStoriesTitleThree: event.target.value });
-	};
-
-	handleUserStoriesTitleOneValidation = (event) => {
-		if(!event.target.value){
-			this.setState({ userStoriesTitleOneError: true });
-		}else{
-			this.setState({ userStoriesTitleOneError: false });
-		}
-	};
-
-	handleUserStoriesTitleTwoValidation = (event) => {
-		if(!event.target.value){
-			this.setState({ userStoriesTitleTwoError: true });
-		}else{
-			this.setState({ userStoriesTitleTwoError: false });
-		}
-	};
-
-	handleUserStoriesTitleThreeValidation = (event) => {
-		if(!event.target.value){
-			this.setState({ userStoriesTitleThreeError: true });
-		}else{
-			this.setState({ userStoriesTitleThreeError: false });
-		}
+	
+	handleUserStoriesEstimatedHrs = (event) => {
+		this.setState({
+            formData:  {
+                ...this.state.formData,
+                estimatedHrs: event.target.value
+            }
+        });
 	};
 
 	handleUserStoriesComplexity = (event) => {
-		this.setState({ complexity: event.target.value });
-	};
-
-	handleStoryAcceptanceCriteria = (event) => {
-		this.setState({ storyAcceptanceText: event.target.value });
-	};
-
-	handleSubmitStoryAcceptance = (title) => {
-		if(title != ''){
-			this.props.addSuccessCriteria(title);
-			this.setState({ storyAcceptanceText: ''});
-		}
-	}
-
-	handleDeleteStoryAcceptance = (val) => {
-		confirmAlert({
-			title: 'Are you sure ?',
-			message: 'Are you sure want to delete this success criteria?',
-			buttons: [
-				{
-					label: 'Yes',
-					onClick: () => this.props.removeSuccessCriteria(val),
-					className: 'remove-success-criteria'
-				},
-				{
-					label: 'No',
-					onClick: () => {},
-				},
-			]
-		})
-	};
-
-	handleClearForm(){
 		this.setState({
-			userStoriesTitleOne: '',
-			userStoriesTitleTwo: '',
-			userStoriesTitleThree: '',
-			userStoriesDescription: '',
-			complexity: 'Low',
-			editorState: EditorState.createEmpty(),
-		});
-		this.props.clearSuccessCriteria();
-	}
+            formData:  {
+                ...this.state.formData,
+                complexity: event.target.value
+            }
+        });
+	};
+	
+	handleUserStoriesType = (event) => {
+		this.setState({
+            formData:  {
+                ...this.state.formData,
+                type: event.target.value
+            }
+        });
+	};
+
+
+	handleUserStoriesSummaryValidation = (event) => {
+		if(!event.target.value){
+			this.setState({ userStoriesSummaryError: true });
+		}else{
+			this.setState({ userStoriesSummaryError: false });
+		}
+	};
+	
+	handleUserStoriesCostValidation = (event) => {
+		if(!event.target.value){
+			this.setState({ userStoriesCostError: true });
+		}else{
+			this.setState({ userStoriesCostError: false });
+		}
+	};
+	
+	handleUserStoriesEstimatedHourValidation = (event) => {
+		if(!event.target.value){
+			this.setState({ userStoriesEstimatedHrsError: true });
+		}else{
+			this.setState({ userStoriesEstimatedHrsError: false });
+		}
+	};
 
 	handleUserStoryValidation = async () =>{
-		this.setState({isLoading: true})
-		const {editStory,projectId, sprintId,storyId } = this.state
-		if(!(this.state.userStoriesTitleOne)){
-			this.setState({ userStoriesTitleOneError: true });
-		}else{
-			this.setState({ userStoriesTitleOneError: false });
+		this.setState({isLoading: true});
+		const { formData } = this.state;
+		const response = await this.props.createUserStories(formData);
+		if(response.success === true){
+			
+		} else{
+			
 		}
-
-		if(!(this.state.userStoriesTitleTwo)){
-			this.setState({ userStoriesTitleTwoError: true });
-		}else{
-			this.setState({ userStoriesTitleTwoError: false });
-		}
-
-		if(!(this.state.userStoriesTitleThree)){
-			this.setState({ userStoriesTitleThreeError: true });
-		}else{
-			this.setState({ userStoriesTitleThreeError: false });
-		}
-
-		if(!(this.state.userStoriesDescription)){
-			this.setState({ userStoriesDescriptionError: true });
-		}else{
-			this.setState({ userStoriesDescriptionError: false });
-		}
-		if(this.state.userStoriesTitleOne && this.state.userStoriesTitleTwo && this.state.userStoriesTitleThree && !this.state.userStoriesDescriptionError){
-			const titleObject = {
-				"role" : this.state.userStoriesTitleOne,
-				"want": this.state.userStoriesTitleTwo,
-				"purpose" : this.state.userStoriesTitleThree
-			}
-			const data = {
-				'titleObject': titleObject,
-				'description': this.state.userStoriesDescription,
-				'complexity': this.state.complexity,
-				'criteria':this.props.successCriteriaData,
-			}
-			if(editStory === "editStory"){
-				const response = await this.props.updateUserStories(data,projectId, sprintId, storyId)
-				if(response && response.data){
-					this.setState({isLoading: false})
-				}else {
-					this.setState({isLoading: false})
-				}
-			}else {
-				if(this.props.projectSavedData._id || this.props.sprintSavedData.project  && this.props.sprintSavedData._id){
-					const response = await this.props.createNewUserStory(data, this.props.sprintSavedData.project || this.props.projectSavedData._id, this.props.sprintSavedData._id);
-					if(response.success == true){
-						this.handleClearForm();
-						this.isValidated(true);
-						this.setState({isLoading: false})
-					}else{
-						this.isValidated(true);
-						this.setState({isLoading: false})
-					}
-				}
-			}
-
-		}
-		this.isValidated(false);
 	}
 
-	isValidated(validationResponse) {
-		return validationResponse;
+	isValidated() {
+		const { userStoriesSummaryError, userStoriesCostError, userStoriesEstimatedHrsError } = this.state;
+		return userStoriesSummaryError === true && userStoriesCostError === true && userStoriesEstimatedHrsError === true;
 	}
 }
 
@@ -463,7 +373,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-	saveUserStories: (data, projectId, sprintId) => dispatch(saveUserStories(data, projectId, sprintId)),
+	createUserStories: (data, projectId, sprintId) => dispatch(createUserStories(data, projectId, sprintId)),
 	clearUserStoriesData: () => dispatch(clearUserStoriesData()),
 	setUserStoriesData: (data) => dispatch(setUserStoriesData(data)),
 	deleteUserStory:(projectId, sprintId, storyId)=>dispatch(deleteUserStory(projectId, sprintId, storyId)),
