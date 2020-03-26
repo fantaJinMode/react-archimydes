@@ -5,6 +5,7 @@ import {
   GET_USER_STORIES_START,
   GET_USER_STORIES_SUCCESS,
   GET_USER_STORIES_ERROR,
+  CLEAR_USER_STORIES_DATA,
 } from "./constant";
 import { saveUserStoriesAPI, getUserStoriesAPI } from "../api/userStoriesApi";
 import {
@@ -68,3 +69,7 @@ export const getUserStories = () => {
     }
   }
 };
+
+export const clearUserStoriesData = () => ({
+  type: CLEAR_USER_STORIES_DATA,
+});
