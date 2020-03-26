@@ -1,6 +1,5 @@
 
 import loginPage from "../views/loginPage/loginPage.jsx";
-import createUserStories from "../views/userStories/createUserStories.jsx";
 import React from "react";
 
 
@@ -14,7 +13,6 @@ export default NotFound
 
 export const indexRoutes = [
   { path: "/login-page", name: "LoginPage", component: loginPage },
-  { path: "/userStories", name: "LoginPage", component: createUserStories },
 ];
 
 export const privateRoutes = [];

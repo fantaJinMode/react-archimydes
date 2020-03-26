@@ -1,30 +1,30 @@
-import React from "./node_modules/react";
+import React from "react";
 // @material-ui/core components
-import withStyles from "./node_modules/@material-ui/core/styles/withStyles";
-import InputAdornment from "./node_modules/@material-ui/core/InputAdornment";
-import Icon from "./node_modules/@material-ui/core/Icon";
+import withStyles from "@material-ui/core/styles/withStyles";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
-import Email from "./node_modules/@material-ui/icons/Email";
+import Email from "@material-ui/icons/Email";
 // core components
-import GridContainer from "./node_modules/components/Grid/GridContainer.jsx.js";
-import GridItem from "./node_modules/components/Grid/GridItem.jsx.js";
-import Button from "./node_modules/components/CustomButtons/Button.jsx.js";
-import Card from "./node_modules/components/Card/Card.jsx.js";
-import CardBody from "./node_modules/components/Card/CardBody.jsx.js";
-import CardHeader from "./node_modules/components/Card/CardHeader.jsx.js";
-import CustomInput from "./node_modules/components/CustomInput/CustomInput.jsx.js";
-import PropTypes from './node_modules/prop-types';
+import GridContainer from "components/Grid/GridContainer.jsx";
+import GridItem from "components/Grid/GridItem.jsx";
+import Button from "components/CustomButtons/Button.jsx";
+import Card from "components/Card/Card.jsx";
+import CardBody from "components/Card/CardBody.jsx";
+import CardHeader from "components/Card/CardHeader.jsx";
+import CustomInput from "components/CustomInput/CustomInput.jsx";
+import PropTypes from 'prop-types';
 
-import loginPageStyle from "./node_modules/assets/jss/material-kit-pro-react/views/loginPageStyle.jsx.js";
+import loginPageStyle from "assets/jss/material-kit-pro-react/views/loginPageStyle.jsx";
 
 import image from "assets/img/bg7.jpg";
-import SnackbarContent from "./node_modules/components/Snackbar/SnackbarContent.jsx.js";
-import {connect} from "./node_modules/react-redux";
-import NavigationBar from "./node_modules/components/inc/NavigationBar.jsx.js";
+import SnackbarContent from "components/Snackbar/SnackbarContent.jsx";
+import {connect} from "react-redux";
+import NavigationBar from "components/inc/NavigationBar.jsx";
 import { login } from "../../actions/login";
 
-import styles from "./node_modules/assets/jss/customStyle.jsx.js";
-import Footer from "./node_modules/components/Footer/Footer.jsx.js";
+import styles from "assets/jss/customStyle.jsx";
+import Footer from "components/Footer/Footer.jsx";
 import { isLoggedIn, getUserData } from "../../utils/common";
 import Clearfix from "../../components/Clearfix/Clearfix";
 import LoadingComponent from "../../components/inc/LoadingComponent";
