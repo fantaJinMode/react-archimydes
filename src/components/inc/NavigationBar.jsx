@@ -31,9 +31,7 @@ class NavigationBar extends React.Component {
 
   async handleLogout() {
     const response = await this.props.logout();
-    if (response.success == true) {
-      this.context.router.history.push('/login-page');
-    }
+    this.context.router.history.push('/login-page');
   }
 
   render() {
@@ -56,6 +54,15 @@ class NavigationBar extends React.Component {
                     color="transparent"
                   >
                     <Dashboard/> <Link to={'/user-story'}>{'User Stories'}</Link>
+                  </Button>
+                </ListItem>
+                <ListItem className={classes.listItem}>
+                  <Button
+                    className={classes.navLink}
+                    onClick={() => this.handleLogout()}
+                    color="transparent"
+                  >
+                    <PowerSettings/> Log off
                   </Button>
                 </ListItem>
               </List>

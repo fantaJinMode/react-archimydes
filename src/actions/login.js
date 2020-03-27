@@ -52,12 +52,12 @@ const logoutError = error => {
 export const logout = () => {
   return async (dispatch) => {
     try {
-      const response = await logoutAPI();
+      // const response = await logoutAPI();
       removeAllUserinfo();
-      dispatch(logoutSuccess(response));
-      return response;
+      // dispatch(logoutSuccess(response));
+      // return response;
     } catch (error) {
-      dispatch(logoutError(error));
+      // dispatch(logoutError(error));
       return error;
     }
   }
