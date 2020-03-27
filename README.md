@@ -28,8 +28,7 @@ Your app is ready to be deployed!
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### `Note`
 I dont have api to create users with admin and user role so i am using the following static username
 
 Admin
