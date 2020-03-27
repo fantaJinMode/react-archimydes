@@ -21,6 +21,7 @@ import Clearfix from "components/Clearfix/Clearfix.jsx";
 
 import style from "assets/jss/material-kit-pro-react/views/componentsSections/contentAreas.jsx";
 import { getUserStories } from "../../actions/userStories.js";
+import { getUserData } from "../../utils/common";
 import LoadingComponent from "components/inc/LoadingComponent.jsx";
 import styles from "assets/jss/customStyle.jsx";
 
@@ -47,6 +48,8 @@ class UserStoriesList extends React.Component {
 
   render() {
     const {classes, isFetching, userStoriesListData } = this.props;
+    const loggedInUserData = getUserData();
+    console.log('getUserData', loggedInUserData);
 
     const newTableData = userStoriesListData.map(
       (val, i) => {
@@ -62,23 +65,47 @@ class UserStoriesList extends React.Component {
         newArr.push(_.upperFirst(val.complexity));
         newArr.push(val.estimatedHrs);
         newArr.push(val.cost);
-        if(val.reject) {
-            newArr.push(
-                <Button type="button" size="sm" style={styles.statusWidth} color="danger" round>Rejected</Button>
-                )
-        } else if (val.approved) {
-            newArr.push(
-                <Button type="button" size="sm" style={styles.statusWidth} color="success" round>Approved</Button>
-                )
-        } else {
-            newArr.push(
-                <Button type="button" size="sm" style={styles.statusWidth} color="warning" round>Pending</Button>
-            );
+        if(!_.isEmpty(loggedInUserData) && loggedInUserData.userRoles.includes("Admin")) {
+            if(val.reject) {
+                newArr.push(
+                    <Button type="button" size="sm" style={styles.statusWidth} color="danger" round>Rejected</Button>
+                    )
+            } else if (val.approved) {
+                newArr.push(
+                    <Button type="button" size="sm" style={styles.statusWidth} color="success" round>Approved</Button>
+                    )
+            } else {
+                newArr.push(
+                    <Button type="button" size="sm" style={styles.statusWidth} color="warning" round>Pending</Button>
+                );
+            }
+            newArr.push(val.createdBy);
         }
-        newArr.push(val.createdBy);
         
         return newArr;
       });
+
+      const tableHeadUser = [
+            "#",
+            "Summary",
+            "Description",
+            "Type",
+            "Complexity",
+            "Estimatation (hr)",
+            "Cost",
+        ];
+
+    const tableHeadAdmin=[
+        "#",
+        "Summary",
+        "Description",
+        "Type",
+        "Complexity",
+        "Estimatation (hr)",
+        "Cost",
+        "Status",
+        "CreatedBy",
+        ];
 
     return (
         <div>
@@ -90,17 +117,7 @@ class UserStoriesList extends React.Component {
             <PageTitle title="User Stories List" />
             <LoadingComponent isLoading={ isFetching }>
             <Table striped={true}
-                    tableHead={[
-                    "#",
-                    "Summary",
-                    "Description",
-                    "Type",
-                    "Complexity",
-                    "Estimatation (hr)",
-                    "Cost",
-                    "Status",
-                    "CreatedBy",
-                    ]}
+                    tableHead={(!_.isEmpty(loggedInUserData) && loggedInUserData.userRoles.includes("Admin") ? tableHeadAdmin : tableHeadUser)}
                     tableData={newTableData}
             />
             </LoadingComponent>
