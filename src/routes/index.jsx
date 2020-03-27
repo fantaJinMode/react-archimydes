@@ -16,6 +16,7 @@ export default NotFound
 
 export const indexRoutes = [
   { path: "/login-page", name: "LoginPage", component: loginPage },
+  { path: "/", name: "LoginPage", component: loginPage },
   { path: "/user-story/create", name: "CreateUserStories", component: createUserStories },
   { path: "/user-story/details/:id", name: "UserStoriesLDetails", component: UserStoriesDetails },
   { path: "/user-story", name: "UserStoriesList", component: userStoriesList },

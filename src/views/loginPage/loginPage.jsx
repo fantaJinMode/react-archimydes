@@ -51,7 +51,7 @@ class LoginPage extends React.Component {
     //Check if user already logged in
     if(isLoggedIn()){
       if(getUserData() && getUserData().userRoles && getUserData().userRoles.length && getUserData().userRoles.includes("Admin")){
-        this.context.router.history.push('/admin/projects');
+        this.context.router.history.push('/user-story');
       }else{
         this.context.router.history.push('/');
       }
