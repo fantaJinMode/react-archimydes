@@ -49,7 +49,6 @@ class UserStoriesList extends React.Component {
   render() {
     const {classes, isFetching, userStoriesListData } = this.props;
     const loggedInUserData = getUserData();
-    console.log('getUserData', loggedInUserData);
 
     const newTableData = userStoriesListData.map(
       (val, i) => {

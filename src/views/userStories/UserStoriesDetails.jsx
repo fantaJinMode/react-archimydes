@@ -20,6 +20,7 @@ import NavigationBar from "components/inc/NavigationBar.jsx";
 import Clearfix from "components/Clearfix/Clearfix.jsx";
 
 import { getUserStories, approveUserStory, rejectUserStory } from "../../actions/userStories.js";
+import { getUserData } from "../../utils/common";
 
 import style from "assets/jss/material-kit-pro-react/views/componentsSections/contentAreas.jsx";
 import styles from "assets/jss/customStyle.jsx";
@@ -64,6 +65,7 @@ class UserStoriesDetails extends React.PureComponent {
     modifiedData.approved = true;
     modifiedData.reject = false;
     approveUserStory(modifiedData);
+    this.context.router.history.push('/user-story');
   }
 
   onRejectUserStory(userStory) {
@@ -74,6 +76,7 @@ class UserStoriesDetails extends React.PureComponent {
     modifiedData.approved = false;
     modifiedData.reject = true;
     approveUserStory(modifiedData);
+    this.context.router.history.push('/user-story');
   }
 
   render() {
@@ -90,6 +93,7 @@ class UserStoriesDetails extends React.PureComponent {
     }
 
     const userStory = _.find(userStoriesListData, (item) => item.id == params.id);
+    const loggedInUserData = getUserData();
 
     const {
         summary,
@@ -137,9 +141,13 @@ class UserStoriesDetails extends React.PureComponent {
             </Grid>
           </div>
             <Clearfix />
-            <div className={classes.left} style={styles.marginTopBottom}>              
-              <Button type="button" color="success" onClick={() => this.onApproveUserStory(userStory)} round>Approved</Button>
-              <Button type="button" color="danger" onClick={() => this.onRejectUserStory(userStory)} round>Reject</Button>
+            <div className={classes.left} style={styles.marginTopBottom}>
+              {(!_.isEmpty(loggedInUserData) && loggedInUserData.userRoles.includes("Admin")) && (
+                <React.Fragment>        
+                  <Button type="button" color="success" onClick={() => this.onApproveUserStory(userStory)} round>Approved</Button>
+                  <Button type="button" color="danger" onClick={() => this.onRejectUserStory(userStory)} round>Reject</Button>
+                </React.Fragment>
+              )}
               <Link to="/user-story">
                 <Button type="button" color="success" round>Back</Button>
               </Link>
