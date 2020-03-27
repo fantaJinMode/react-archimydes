@@ -55,46 +55,7 @@ class NavigationBar extends React.Component {
                     className={classes.navLink + " " + classes.navLinkActive}
                     color="transparent"
                   >
-                    <Dashboard/> <Link to={(userData && userData.userRoles && userData.userRoles.length && userData.userRoles.includes("Admin")) ? '/admin/projects' : '/'}>Dashboard</Link>
-                  </Button>
-                </ListItem>
-                <ListItem className={classes.listItem}>
-                  <Button
-                    className={classes.navLink}
-                    color="transparent"
-                  >
-                    <AccountCircle/> <Link to="/profile-page">Profile</Link>
-                  </Button>
-                </ListItem>
-                {
-                  userData && userData.userRoles.indexOf("Admin") !== -1 ? (
-
-                  <ListItem className={classes.listItem}>
-                    <Button
-                      className={classes.navLink}
-                      color="transparent"
-                    >
-                      <AttachMoney/> <Link to="/credits">Credits</Link>
-                    </Button>
-                  </ListItem>
-                  ) : null
-                }
-                <ListItem className={classes.listItem}>
-                  <Button
-                    href={'mailto:'+CONTACT_US_EMAIL}
-                    className={classes.navLink}
-                    color="transparent"
-                  >
-                    <MailOutline/> Contact Us
-                  </Button>
-                </ListItem>
-                <ListItem className={classes.listItem}>
-                  <Button
-                    className={classes.navLink}
-                    onClick={() => this.handleLogout()}
-                    color="transparent"
-                  >
-                    <PowerSettings/> Log off
+                    <Dashboard/> <Link to={'/user-story'}>{'User Stories'}</Link>
                   </Button>
                 </ListItem>
               </List>

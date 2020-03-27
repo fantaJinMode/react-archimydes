@@ -23,10 +23,10 @@ export const checkUserDeleted = async () =>{
   }
 }
 export const isLoggedIn = () => {
-  checkUserDeleted()
+  // checkUserDeleted()
   const accessToken = getToken();
   const expirationDate = getTokenExpiration();
-  if(localStorage.getItem('userData') && accessToken && !isTokenExpired(expirationDate)){
+  if(localStorage.getItem('userData')){
     return true;
   }
   return false;
