@@ -6,6 +6,8 @@ import {
   GET_USER_STORIES_SUCCESS,
   GET_USER_STORIES_ERROR,
   CLEAR_USER_STORIES_DATA,
+  APPROVED_USER_STORY,
+  REJECT_USER_STORY,
 } from "./constant";
 import { saveUserStoriesAPI, getUserStoriesAPI } from "../api/userStoriesApi";
 import {
@@ -48,7 +50,7 @@ const getUserStoriesStart = () => ({
 
 const getUserStoriesSucces = json => ({
   type: GET_USER_STORIES_SUCCESS,
-  userStoriesListResponse: json.data,
+  userStoriesListResponse: json,
 });
 
 const getUserStoriesError = error => ({
@@ -60,7 +62,27 @@ export const getUserStories = () => {
   return async (dispatch) => {
     dispatch(getUserStoriesStart());
     try {
-      const response = await getUserStoriesAPI();
+      // const response = await getUserStoriesAPI();
+      const response = [{
+        id: 1,
+        createdBy: 2,
+        summary: '1st story created by 2',
+        description: 'dummy desc',
+        type: 'enhancement',
+        complexity: 'high',
+        estimatedHrs: 1,
+        cost: 100,
+      },
+      {
+        id: 2,
+        createdBy: 1,
+        summary: '2nd story created by 1',
+        description: 'Beautiful Story',
+        type: 'bug',
+        complexity: 'low',
+        estimatedHrs: 4,
+        cost: 120,
+    }];
       dispatch(getUserStoriesSucces(response));
       return response;
     } catch (error) {
@@ -70,6 +92,13 @@ export const getUserStories = () => {
   }
 };
 
-export const clearUserStoriesData = () => ({
-  type: CLEAR_USER_STORIES_DATA,
+export const approveUserStory = (userStory) => ({
+  type: APPROVED_USER_STORY,
+  val: userStory,
 });
+
+export const rejectUserStory = (userStory) => ({
+  type: REJECT_USER_STORY,
+  val: userStory,
+});
+

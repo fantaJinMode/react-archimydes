@@ -19,29 +19,61 @@ import Footer from "components/Footer/Footer.jsx";
 import NavigationBar from "components/inc/NavigationBar.jsx";
 import Clearfix from "components/Clearfix/Clearfix.jsx";
 
-import { getUserStories } from "../../actions/userStories.js";
+import { getUserStories, approveUserStory, rejectUserStory } from "../../actions/userStories.js";
 
 import style from "assets/jss/material-kit-pro-react/views/componentsSections/contentAreas.jsx";
 import styles from "assets/jss/customStyle.jsx";
 
 const mapStateToProps = state => ({
   isFetching: state.userStories.isFetching,
-  userStoriesListData: state.userStories.data,
+  userStoriesListData: state.userStories.userStoriesList,
 });
 
 const mapDispatchToProps = dispatch => ({
   loadUserStories: () => dispatch(getUserStories()),
+  approveUserStory: (userStory) => dispatch(approveUserStory(userStory)),
+  rejectUserStory: (userStory) => dispatch(rejectUserStory(userStory)),
 });
 
 class UserStoriesDetails extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    
+    this.onApproveUserStory = this.onApproveUserStory.bind(this);
+    this.onRejectUserStory = this.onRejectUserStory.bind(this);
+  }
 
   componentDidMount() {
-    // this.props.loadUserStories().then(res => {
-    //   if(!this.props.userStoriesListData.length) {
-    //     this.context.router.history.push('user-story/create');
-    //   }
-    // });
-    console.log('this.props.match.params.id', this.props.match.params.id);
+    const {
+      userStoriesListData,
+    } = this.props;
+    if (_.isEmpty(userStoriesListData)) {
+      this.props.loadUserStories().then(res => {
+        if(!this.props.userStoriesListData.length) {
+          this.context.router.history.push('user-story/create');
+        }
+      });
+    }
+  }
+
+  onApproveUserStory(userStory) {
+    const {
+      approveUserStory,
+    } = this.props;
+    let modifiedData = userStory;
+    modifiedData.approved = true;
+    modifiedData.reject = false;
+    approveUserStory(modifiedData);
+  }
+
+  onRejectUserStory(userStory) {
+    const {
+      approveUserStory,
+    } = this.props;
+    let modifiedData = userStory;
+    modifiedData.approved = false;
+    modifiedData.reject = true;
+    approveUserStory(modifiedData);
   }
 
   render() {
@@ -49,29 +81,9 @@ class UserStoriesDetails extends React.PureComponent {
       classes,
       match: {
         params,
-      }
+      },
+      userStoriesListData,
     } = this.props;
-
-    const userStoriesListData = [{
-        id: 1,
-        createdBy: 2,
-        summary: '1st story created by 2',
-        description: 'dummy desc',
-        type: 'enhancement',
-        complexity: 'high',
-        estimatedHrs: 1,
-        cost: 100,
-    },
-    {
-      id: 2,
-      createdBy: 1,
-      summary: '2nd story created by 1',
-      description: 'Beautiful Story',
-      type: 'bug',
-      complexity: 'low',
-      estimatedHrs: 4,
-      cost: 120,
-  }];
 
     if(_.isEmpty(userStoriesListData)) {
       return false;
@@ -126,8 +138,8 @@ class UserStoriesDetails extends React.PureComponent {
           </div>
             <Clearfix />
             <div className={classes.left} style={styles.marginTopBottom}>              
-              <Button type="button" color="success" round>Approved</Button>
-              <Button type="button" color="danger" round>Reject</Button>
+              <Button type="button" color="success" onClick={() => this.onApproveUserStory(userStory)} round>Approved</Button>
+              <Button type="button" color="danger" onClick={() => this.onRejectUserStory(userStory)} round>Reject</Button>
               <Link to="/user-story">
                 <Button type="button" color="success" round>Back</Button>
               </Link>
