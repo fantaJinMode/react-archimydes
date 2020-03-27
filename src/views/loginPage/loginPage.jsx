@@ -97,7 +97,7 @@ class LoginPage extends React.Component {
         }
         if(this.state.email === "user@user.com" && this.state.password === "user") {
           this.setState({ isLoading: false})
-          localStorage.setItem("userData", JSON.stringify({firstname:'admin', lastname: 'admin', id:1, userRoles:['Admin']}));
+          localStorage.setItem("userData", JSON.stringify({firstname:'admin', lastname: 'admin', id:1, userRoles:['User']}));
           this.context.router.history.push('/user-story');
         }
       }
