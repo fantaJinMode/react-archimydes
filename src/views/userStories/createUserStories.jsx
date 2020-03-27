@@ -18,7 +18,7 @@ import style from "assets/jss/material-kit-pro-react/views/componentsSections/co
 import basicsStyle from "assets/jss/material-kit-pro-react/views/componentsSections/basicsStyle.jsx";
 import { connect } from "react-redux";
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import { createUserStories, clearUserStoriesData, setUserStoriesData, deleteUserStory,getOneUserStories,updateUserStories } from "../../actions/userStories";
+import { createUserStories } from "../../actions/userStories";
 import _ from 'lodash-es';
 import { Editor } from 'react-draft-wysiwyg';
 import { EditorState, convertToRaw } from 'draft-js';
@@ -51,8 +51,8 @@ class UserStories extends React.Component {
 				description: '',
 				type: 1,
 				complexity: 'Low',
-				estimatedHrs: null,
-				cost: null 
+				estimatedHrs: 0,
+				cost: 0 
 			},
 			userStoriesSummaryError: false,
 			userStoriesCostError: false,
@@ -69,21 +69,6 @@ class UserStories extends React.Component {
 
 	componentDidMount() {
 		// this.getOneUserStory()
-	}
-
-	onEditorStateChange = (editorState) => {
-		this.setState({
-			editorState,
-		});
-		this.setState({ userStoriesDescription: draftToHtml(convertToRaw(editorState.getCurrentContent())) })
-	};
-
-	onEditorStateBlur = (descText) => {
-		if(!descText){
-			this.setState({ userStoriesDescriptionError: true });
-		}else{
-			this.setState({ userStoriesDescriptionError: false });
-		}
 	}
 
 	render() {
@@ -235,7 +220,7 @@ class UserStories extends React.Component {
 						round
 						size="md"
 						style={{marginTop:33}}
-						disabled={_.some(formData, _.isEmpty)}
+						disabled={!formData.summary || !formData.cost || !formData.estimatedHrs}
 						onClick={this.handleUserStoryValidation}
 					>
 						Submit
@@ -275,53 +260,6 @@ class UserStories extends React.Component {
         });
 	}
 
-	handleUserStoriesSummary = (event) => {
-		this.setState({
-            formData:  {
-                ...this.state.formData,
-                summary: event.target.value
-            }
-        });
-	};
-
-	handleUserStoriesCost = (event) => {
-		console.log('test', event);
-		this.setState({
-            formData:  {
-                ...this.state.formData,
-                cost: event.target.value
-            }
-        });
-	};
-	
-	handleUserStoriesEstimatedHrs = (event) => {
-		this.setState({
-            formData:  {
-                ...this.state.formData,
-                estimatedHrs: event.target.value
-            }
-        });
-	};
-
-	handleUserStoriesComplexity = (event) => {
-		this.setState({
-            formData:  {
-                ...this.state.formData,
-                complexity: event.target.value
-            }
-        });
-	};
-	
-	handleUserStoriesType = (event) => {
-		this.setState({
-            formData:  {
-                ...this.state.formData,
-                type: event.target.value
-            }
-        });
-	};
-
-
 	handleUserStoriesSummaryValidation = (event) => {
 		if(!event.target.value){
 			this.setState({ userStoriesSummaryError: true });
@@ -329,6 +267,27 @@ class UserStories extends React.Component {
 			this.setState({ userStoriesSummaryError: false });
 		}
 	};
+
+	onEditorStateChange = (editorState) => {
+		this.setState({
+			editorState,
+		});
+
+		this.setState({
+            formData:  {
+                ...this.state.formData,
+                description: draftToHtml(convertToRaw(editorState.getCurrentContent()))
+            }
+        });
+	};
+
+	onEditorStateBlur = (descText) => {
+		if(!descText){
+			this.setState({ userStoriesDescriptionError: true });
+		}else{
+			this.setState({ userStoriesDescriptionError: false });
+		}
+	}
 	
 	handleUserStoriesCostValidation = (event) => {
 		if(!event.target.value){
@@ -374,11 +333,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
 	createUserStories: (data, projectId, sprintId) => dispatch(createUserStories(data, projectId, sprintId)),
-	clearUserStoriesData: () => dispatch(clearUserStoriesData()),
-	setUserStoriesData: (data) => dispatch(setUserStoriesData(data)),
-	deleteUserStory:(projectId, sprintId, storyId)=>dispatch(deleteUserStory(projectId, sprintId, storyId)),
-	getOneUserStories:(projectId, sprintId, storyId)=>dispatch(getOneUserStories(projectId, sprintId, storyId)),
-	updateUserStories:(data,projectId, sprintId, storyId)=>dispatch(updateUserStories(data,projectId, sprintId, storyId)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps, null,  { withRef: true })(withStyles(style)(withRouter(UserStories)));
