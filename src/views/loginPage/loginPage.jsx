@@ -87,19 +87,21 @@ class LoginPage extends React.Component {
         //       }else{
         //         this.context.router.history.push('/');
         //       }
-        //     }
+        //     }asdasdasdaa
         //   }
         // }
-        if(this.state.email === "admin" && this.state.password === "admin") {
-          // localStorage.setItem("accessToken", response.accessToken);
+        if(this.state.email === "admin@admin.com" && this.state.password === "admin") {
+          this.setState({ isLoading: false})
           localStorage.setItem("userData", JSON.stringify({firstname:'admin', lastname: 'admin', id:1, userRoles:['Admin']}));
-          this.context.router.history.push('/');
-          // localStorage.setItem('expireToken', response.accessTokenExpiresAt);
+          this.context.router.history.push('/user-story');
         }
-        console.log(response);
+        if(this.state.email === "user@user.com" && this.state.password === "user") {
+          this.setState({ isLoading: false})
+          localStorage.setItem("userData", JSON.stringify({firstname:'admin', lastname: 'admin', id:1, userRoles:['Admin']}));
+          this.context.router.history.push('/user-story');
+        }
       }
     })
-
   }
 
   handleUserInput = (e) => {
