@@ -1,5 +1,6 @@
 import React from "react";
 import {withRouter} from "react-router-dom";
+import PropTypes from 'prop-types';
 import withStyles from "@material-ui/core/styles/withStyles";
 import Grid from '@material-ui/core/Grid';
 import FormControl from "@material-ui/core/FormControl";
@@ -285,11 +286,9 @@ class UserStories extends React.Component {
 		this.setState({isLoading: true});
 		const { formData } = this.state;
 		const response = await this.props.createUserStories(formData);
-		if(response.success === true){
-			
-		} else{
-			
-		}
+		// if(response.success === true){
+			this.context.router.history.push('/user-story');
+		// } 
 	}
 
 	isValidated() {
@@ -311,4 +310,8 @@ const mapDispatchToProps = dispatch => ({
 	createUserStories: (data, projectId, sprintId) => dispatch(createUserStories(data, projectId, sprintId)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps, null,  { withRef: true })(withStyles(style)(withRouter(UserStories)));
+UserStories.contextTypes = {
+	router: PropTypes.object.isRequired
+};
+
+export default connect(mapStateToProps, mapDispatchToProps, null,  { withRef: true })(withStyles(style)(UserStories));

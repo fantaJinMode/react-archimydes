@@ -87,7 +87,7 @@ class LoginPage extends React.Component {
         //       }else{
         //         this.context.router.history.push('/');
         //       }
-        //     }asdasdasdaa
+        //     }
         //   }
         // }
         if(this.state.email === "admin@admin.com" && this.state.password === "admin") {
@@ -98,7 +98,7 @@ class LoginPage extends React.Component {
         if(this.state.email === "user@user.com" && this.state.password === "user") {
           this.setState({ isLoading: false})
           localStorage.setItem("userData", JSON.stringify({firstname:'admin', lastname: 'admin', id:1, userRoles:['User']}));
-          this.context.router.history.push('/user-story');
+          this.context.router.history.push('/user-story/create');
         }
       }
     })
