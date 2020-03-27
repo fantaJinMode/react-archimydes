@@ -6,7 +6,6 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 
-import Input from '@material-ui/core/Input';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from "@material-ui/core/InputLabel";
 import Button from "components/CustomButtons/Button.jsx";
@@ -19,12 +18,6 @@ import basicsStyle from "assets/jss/material-kit-pro-react/views/componentsSecti
 import { connect } from "react-redux";
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { createUserStories } from "../../actions/userStories";
-import _ from 'lodash-es';
-import { Editor } from 'react-draft-wysiwyg';
-import { EditorState, convertToRaw } from 'draft-js';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import draftToHtml from 'draftjs-to-html';
-
 
 import classNames from "classnames";
 // @material-ui/core components
@@ -58,7 +51,6 @@ class UserStories extends React.Component {
 			userStoriesCostError: false,
 			userStoriesEstimatedHrsError: false,
 			isLoading: false,
-			editorState: EditorState.createEmpty(),
 		};
 		this.isValidated = this.isValidated.bind(this);
 	}
@@ -72,7 +64,7 @@ class UserStories extends React.Component {
 	}
 
 	render() {
-        const { editorState, formData, editStory, userStoriesSummaryError, userStoriesCostError, userStoriesEstimatedHrsError, isLoading  } = this.state;
+        const { formData, editStory, userStoriesSummaryError, userStoriesCostError, userStoriesEstimatedHrsError, isLoading  } = this.state;
 		const { classes } = this.props;
 	
 		return (
@@ -113,18 +105,23 @@ class UserStories extends React.Component {
 								<div className="title form-label">
 									<h3 className="form-label-text">Description:</h3>
 								</div>
-								<Editor
-									editorState={editorState}
-									toolbarClassName="toolbarClassName"
-									wrapperClassName={ this.state.userStoriesDescriptionError ? "editorWrapper editorRequiredError" : "editorWrapper" }
-									editorClassName="editorClassName"
-									onEditorStateChange={this.onEditorStateChange}
-									onBlur={() => this.onEditorStateBlur(editorState.getCurrentContent().hasText())}
+								<TextField
+									id="regular"
+									name="description"
+									inputProps={{
+										maxLength: 150,
+									}}
+									className="form-textfield"
+									fullWidth={true}
+									value={ formData.description }
+									onChange={this.handleUserInput}
+									multiline
+									rows={5}
 								/>
 							</div>
 						</Grid>
-						<Grid item xs={12}>
-							<div className="form-element form-select-element complexity-element">
+						<Grid style={{marginTop: 33}} item xs={12}>
+							<div className="form-element">
 								<FormControl className={basicsStyle.formControl}>
 									<InputLabel htmlFor="complexity-helper">Complexity</InputLabel>
 									<Select
@@ -142,7 +139,7 @@ class UserStories extends React.Component {
 								</FormControl>
 							</div>
 						</Grid>
-						<Grid item xs={12}>
+						<Grid style={{marginTop: 33}} item xs={12}>
 							<div className="form-element form-select-element complexity-element">
 								<FormControl className={basicsStyle.formControl}>
 									<InputLabel htmlFor="type">Type</InputLabel>
@@ -268,27 +265,6 @@ class UserStories extends React.Component {
 		}
 	};
 
-	onEditorStateChange = (editorState) => {
-		this.setState({
-			editorState,
-		});
-
-		this.setState({
-            formData:  {
-                ...this.state.formData,
-                description: draftToHtml(convertToRaw(editorState.getCurrentContent()))
-            }
-        });
-	};
-
-	onEditorStateBlur = (descText) => {
-		if(!descText){
-			this.setState({ userStoriesDescriptionError: true });
-		}else{
-			this.setState({ userStoriesDescriptionError: false });
-		}
-	}
-	
 	handleUserStoriesCostValidation = (event) => {
 		if(!event.target.value){
 			this.setState({ userStoriesCostError: true });
